@@ -74,7 +74,7 @@ module.exports = function (file, opts) {
 			        if (exists) {
 
 						var url = path.relative(opts.rootDir || absoluteDir, absPath);
-						url = absPath.replace(path.join(baseDir, '../../'), '');
+						url = absPath.replace(path.join(runDir, '../../'), '');
 
 						url = url.split('\\').join('/');
 						data = data.replace(expr, '\r\nappendStyle("/' + url + '")');
