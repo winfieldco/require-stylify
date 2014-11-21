@@ -8,6 +8,8 @@ var clAppender = require('./append-stylesheet');
 var fs = require('fs');
 var prependerAdded = false;
 var _ = require('lodash');
+var findModule = require('find-module');
+var runDir = null;
 
 function matchArgs(fnCallString) {
 	var args = fnCallString.match(/("|')([^("|')]+)("|')\s*/g);
@@ -24,6 +26,7 @@ module.exports = function (file, opts) {
 		options.support = ['css', 'less', 'scss'];
 	}
 
+    runDir = global.process.env.PWD;
 
 	return through(transform, flush);
 
@@ -57,15 +60,27 @@ module.exports = function (file, opts) {
 				expressions.css.forEach(function (expr){
 					var cssFilePath = matchArgs(expr)[0];
 
-					var absPath = path.join(absoluteDir, cssFilePath);	//less file absolute path
-					if (fs.existsSync(absPath)) {
+			        var exists = false;
+			        var absPath = path.join(absoluteDir, cssFilePath);  //less file absolute path
+			        if (fs.existsSync(absPath)) {
+			          exists = true;
+			        }
+			        else {
+			          absPath = findModule(cssFilePath);
+			          if (fs.existsSync(absPath)) {
+			            exists = true;
+			          }
+			        }
+			        if (exists) {
 
 						var url = path.relative(opts.rootDir || absoluteDir, absPath);
+						url = absPath.replace(path.join(baseDir, '../../'), '');
+
 						url = url.split('\\').join('/');
 						data = data.replace(expr, '\r\nappendStyle("/' + url + '")');
 
 					} else {
-						throw new Error("Path " + cssFilePath + " failed to find required css file");
+						throw new Error("Path " + absPath + " failed to find required css file");
 					}
 				});
 			}

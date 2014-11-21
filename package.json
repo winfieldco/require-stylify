@@ -30,7 +30,8 @@
     "less": "^1.7.5",
     "node-sass": "^0.9.5-rc1",
     "through2": "^0.6.1",
-    "lodash": "2.4.1"
+    "lodash": "2.4.1",
+    "find-module": "0.2.1"    
   },
   "devDependencies": {
     "browserify": "~5.12",
